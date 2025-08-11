@@ -1,21 +1,35 @@
+// Sample product data
 const products = [
-  { name: "Laptop", category: "electronics", price: 999 },
-  { name: "Shirt", category: "clothing", price: 25 },
-  { name: "Headphones", category: "electronics", price: 199 }
+    { name: "Laptop", category: "electronics" },
+    { name: "Smartphone", category: "electronics" },
+    { name: "T-Shirt", category: "clothing" },
+    { name: "Jeans", category: "clothing" },
+    { name: "Novel", category: "books" },
+    { name: "Dictionary", category: "books" }
 ];
 
-document.getElementById('filter').addEventListener('change', (e) => {
-  const selected = e.target.value;
-  const filtered = selected === 'all' ? products : products.filter(p => p.category === selected);
-  renderProducts(filtered);
+const categorySelect = document.getElementById("categorySelect");
+const productList = document.getElementById("productList");
+
+// Function to display products
+function displayProducts(filter) {
+    productList.innerHTML = ""; // Clear existing products
+    const filtered = filter === "all"
+        ? products
+        : products.filter(p => p.category === filter);
+
+    filtered.forEach(product => {
+        const div = document.createElement("div");
+        div.classList.add("product");
+        div.textContent = product.name;
+        productList.appendChild(div);
+    });
+}
+
+// Event listener for dropdown change
+categorySelect.addEventListener("change", () => {
+    displayProducts(categorySelect.value);
 });
 
-function renderProducts(products) {
-  const container = document.getElementById('products-container');
-  container.innerHTML = products.map(p => `
-    <div class="product">
-      <h3>${p.name}</h3>
-      <p>$${p.price}</p>
-    </div>
-  `).join('');
-}
+// Initial display
+displayProducts("all");
