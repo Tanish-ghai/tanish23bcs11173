@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product CRUD</title>
+  <style>
+    body { font-family: Arial; padding: 20px;}
+    input, button { padding: 8px; margin: 5px;}
+    table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+    th, td { border: 1px solid black; padding: 8px;}
+  </style>
+</head>
+<body>
+
+<h2>Product Management</h2>
+
+<input id="name" placeholder="Product Name">
+<input id="price" placeholder="Price" type="number">
+<input id="description" placeholder="Description">
+<button onclick="addProduct()">Add</button>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Price</th><th>Description</th><th>Action</th></tr>
+  </thead>
+  <tbody id="list"></tbody>
+</table>
+
+<script>
+const api = "http://localhost:5000/products";
+
+function load(){
+  fetch(api)
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("list").innerHTML = data.map(p => `
+      <tr>
+        <td>${p.name}</td>
+        <td>${p.price}</td>
+        <td>${p.description}</td>
+        <td>
+          <button onclick="editProduct('${p._id}','${p.name}','${p.price}','${p.description}')">Edit</button>
+          <button onclick="deleteProduct('${p._id}')">Delete</button>
+        </td>
+      </tr>
+    `).join("");
+  });
+}
+load();
+
+function addProduct(){
+  let product = {
+    name: document.getElementById("name").value,
+    price: document.getElementById("price").value,
+    description: document.getElementById("description").value
+  };
+  fetch(api, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(product)
+  }).then(load);
+}
+
+function deleteProduct(id){
+  fetch(api + "/" + id, { method: "DELETE" }).then(load);
+}
+
+function editProduct(id, name, price, description){
+  let newName = prompt("Edit Name", name);
+  let newPrice = prompt("Edit Price", price);
+  let newDesc = prompt("Edit Description", description);
+
+  fetch(api + "/" + id, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ name: newName, price: newPrice, description: newDesc })
+  }).then(load);
+}
+</script>
+
+</body>
+</html>
